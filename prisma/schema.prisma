@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model SearchHistory {
+  id        Int      @id @default(autoincrement())
+  city      String
+  country   String?
+  lat       Float?
+  lon       Float?
+  createdAt DateTime @default(now())
+
+  @@map("search_history")
+}
+
+model FavoriteCity {
+  id        Int      @id @default(autoincrement())
+  city      String
+  country   String?
+  lat       Float?
+  lon       Float?
+  createdAt DateTime @default(now())
+
+  @@unique([city, country])
+  @@map("favorite_cities")
+}
+
+model WeatherCache {
+  id          Int      @id @default(autoincrement())
+  city        String
+  data        Json
+  cachedAt    DateTime @default(now())
+  expiresAt   DateTime
+
+  @@unique([city])
+  @@map("weather_cache")
+}
