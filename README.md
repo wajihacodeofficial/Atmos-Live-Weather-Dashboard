@@ -3,239 +3,192 @@
   <img src="https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Prisma-7-2D3748?style=for-the-badge&logo=prisma" alt="Prisma" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-336791?style=for-the-badge&logo=postgresql" alt="PostgreSQL" />
-  <img src="https://img.shields.io/badge/OpenWeatherMap-API-orange?style=for-the-badge" alt="OpenWeatherMap" />
+  <img src="https://img.shields.io/badge/Recharts-3-22b5bf?style=for-the-badge" alt="Recharts" />
 </p>
 
-<h1 align="center">🌤️ Atmos — Live Weather Intelligence Dashboard</h1>
+<h1 align="center">🌤️ Atmos — Live Weather Dashboard</h1>
 
 <p align="center">
-  <strong>A professional-grade, real-time weather intelligence platform built with modern web technologies and HCI principles.</strong>
+  A real-time weather dashboard with live forecasts, air quality monitoring, interactive charts, and city search — built with Next.js, Prisma, and the OpenWeatherMap API.
 </p>
 
 <p align="center">
+  <a href="#screenshots">Screenshots</a> •
   <a href="#features">Features</a> •
   <a href="#tech-stack">Tech Stack</a> •
   <a href="#getting-started">Getting Started</a> •
-  <a href="#architecture">Architecture</a> •
-  <a href="#hci-principles">HCI Principles</a> •
-  <a href="#license">License</a>
+  <a href="#project-structure">Project Structure</a> •
+  <a href="#hci-principles">HCI Principles</a>
 </p>
 
 ---
 
-## 📸 Preview
+## Screenshots
 
-### 🏠 Dashboard — Live Weather & Forecast
+### Dashboard — Live Weather & 7-Day Forecast
 
 <p align="center">
   <img src="public/screenshot-hero.png" alt="Atmos Dashboard - Hero Card & Extended Forecast" width="100%" />
 </p>
 
-### 📊 Weather Analytics & Air Quality
+### Weather Analytics, Wind & Air Quality
 
 <p align="center">
-  <img src="public/screenshot-analytics.png" alt="Atmos Dashboard - Charts, Wind, AQI & 7-Day Overview" width="100%" />
+  <img src="public/screenshot-analytics.png" alt="Atmos Dashboard - Charts, Wind Compass, AQI & 7-Day Overview" width="100%" />
 </p>
 
-### 🏗️ Atmospheric Details & Footer
+### Atmospheric Details, Search History & Footer
 
 <p align="center">
-  <img src="public/screenshot-footer.png" alt="Atmos Dashboard - Details, History & Footer" width="100%" />
+  <img src="public/screenshot-footer.png" alt="Atmos Dashboard - Atmospheric Details, History & Footer" width="100%" />
 </p>
 
 ---
 
-## ✨ Features
+## Features
 
-### 🌡️ Real-Time Weather Intelligence
-
-- **Live Conditions** — Current temperature, feels-like, humidity, wind, visibility, and pressure
-- **7-Day Extended Forecast** — Daily high/low, weather conditions, and precipitation probability
-- **Hourly Trends** — 24-hour temperature, humidity, wind, and rain projections
-- **Air Quality Index (AQI)** — Real-time pollutant levels (PM2.5, PM10, O₃, NO₂) with WHO-standard indicators
-
-### 📊 Interactive Analytics
-
-- **Multi-tab Chart System** — Switch between temperature, precipitation, humidity, and wind views
-- **Dual Timeframes** — Hourly (next 24h) and daily (next 7 days) visualizations
-- **Gradient Charts** — Smooth area and line charts with custom tooltips
-
-### 🔍 Smart Search & Navigation
-
-- **Autocomplete City Search** — Fuzzy search with debounced API calls for responsive results
-- **Geolocation Support** — One-click "locate me" to fetch weather for your current position
-- **Favorites & History** — Pin frequently checked cities and browse recently viewed locations
-
-### 🎨 Premium UI/UX
-
-- **Glassmorphism Design** — Frosted glass cards with blur effects and subtle gradients
-- **Dark Mode First** — A deep Navy/Slate palette designed for comfortable extended viewing
-- **Adaptive Layouts** — Fully responsive from ultra-wide desktop to mobile screens
-- **Micro-Animations** — Smooth transitions, hover effects, and loading states
-- **Demo Mode** — Automatic mock data fallback when API key is missing (perfect for demos)
+- **Live Weather** — Current temperature, feels-like, humidity, wind speed, visibility, and pressure via OpenWeatherMap API
+- **7-Day Forecast** — Daily high/low temperatures, weather icons, and precipitation probability
+- **24-Hour Hourly Charts** — Temperature, humidity, wind, and rain chance visualized with Recharts
+- **Air Quality Index** — Real-time AQI with PM2.5, PM10, O₃, NO₂ pollutant levels
+- **Wind Compass** — Wind speed and direction with an animated compass
+- **City Search with Autocomplete** — Debounced search with OpenWeatherMap geocoding API results
+- **Geolocation** — One-click browser geolocation to get weather for your current position
+- **Favorites** — Save cities to a PostgreSQL database and quickly switch between them
+- **Search History** — Automatically tracks recently searched cities in the database
+- **Unit Toggle** — Switch between °C and °F
+- **Responsive Design** — Works on desktop and mobile screens
+- **Fallback Mock Data** — If the API key is missing, the dashboard shows demo data so the UI is still explorable
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-| Layer           | Technology                                                 |
-| --------------- | ---------------------------------------------------------- |
-| **Framework**   | [Next.js 16](https://nextjs.org/) (App Router, Turbopack)  |
-| **Language**    | [TypeScript 5](https://typescriptlang.org/)                |
-| **Database**    | [PostgreSQL 16](https://postgresql.org/)                   |
-| **ORM**         | [Prisma 7](https://prisma.io/) (with `@prisma/adapter-pg`) |
-| **Styling**     | Vanilla CSS with CSS Custom Properties                     |
-| **Charts**      | [Recharts](https://recharts.org/)                          |
-| **Icons**       | [Lucide React](https://lucide.dev/)                        |
-| **HTTP Client** | [Axios](https://axios-http.com/)                           |
-| **Weather API** | [OpenWeatherMap](https://openweathermap.org/api)           |
-| **Fonts**       | Plus Jakarta Sans, Outfit (Google Fonts)                   |
+| Layer       | Technology                               | Version |
+| ----------- | ---------------------------------------- | ------- |
+| Framework   | Next.js (App Router, Turbopack)          | 16.1.6  |
+| Language    | TypeScript                               | 5.9.3   |
+| Database    | PostgreSQL                               | 16      |
+| ORM         | Prisma (with `@prisma/adapter-pg`)       | 7.4.2   |
+| Charts      | Recharts                                 | 3.7.0   |
+| Icons       | Lucide React                             | —       |
+| HTTP        | Axios                                    | 1.13.6  |
+| Dates       | date-fns                                 | 4.1.0   |
+| Weather API | OpenWeatherMap                           | —       |
+| Fonts       | Plus Jakarta Sans, Outfit (Google Fonts) | —       |
+| Styling     | Vanilla CSS with Custom Properties       | —       |
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- **Node.js** 18+
-- **PostgreSQL** 16 (via Homebrew: `brew install postgresql@16`)
-- **OpenWeatherMap API Key** — [Get one free](https://openweathermap.org/appid)
+- Node.js 18+
+- PostgreSQL 16 (`brew install postgresql@16` on macOS)
+- OpenWeatherMap API key — [get one free here](https://openweathermap.org/appid)
 
-### 1. Clone the Repository
+### 1. Clone
 
 ```bash
 git clone https://github.com/wajihacodeofficial/Atmos-Live-Weather-Dashboard.git
 cd Atmos-Live-Weather-Dashboard
 ```
 
-### 2. Install Dependencies
+### 2. Install
 
 ```bash
 npm install
 ```
 
-### 3. Configure Environment
+### 3. Environment Variables
 
-Create a `.env.local` file in the project root:
+Create `.env.local` in the project root:
 
 ```env
 DATABASE_URL="postgresql://YOUR_USER@localhost:5432/weather_dashboard"
-NEXT_PUBLIC_OPENWEATHER_API_KEY=your_openweathermap_api_key
+NEXT_PUBLIC_OPENWEATHER_API_KEY=your_api_key_here
 ```
 
-### 4. Set Up the Database
+### 4. Database Setup
 
 ```bash
-# Create the database
 createdb weather_dashboard
-
-# Push the Prisma schema
 npx prisma db push
-
-# Generate the Prisma client
 npx prisma generate
 ```
 
-### 5. Run the Development Server
+### 5. Run
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000).
 
-> **💡 No API key?** The dashboard automatically switches to **Demo Mode** with realistic mock data so you can explore the full UI.
+> If no API key is configured, the dashboard runs in demo mode with sample data.
 
 ---
 
-## 🏗️ Architecture
+## Project Structure
 
 ```
 src/
 ├── app/
 │   ├── api/
-│   │   ├── weather/route.ts    # Current weather + caching
-│   │   ├── forecast/route.ts   # 7-day & hourly forecast + AQI
-│   │   ├── favorites/route.ts  # CRUD for favorite cities
-│   │   └── history/route.ts    # Search history tracking
-│   ├── globals.css             # Design system & tokens
-│   ├── layout.tsx              # Root layout with SEO metadata
-│   └── page.tsx                # Main dashboard page
+│   │   ├── weather/route.ts      # GET current weather (with caching)
+│   │   ├── forecast/route.ts     # GET 7-day + hourly forecast + AQI
+│   │   ├── favorites/route.ts    # GET/POST/DELETE favorite cities
+│   │   └── history/route.ts      # GET/POST/DELETE search history
+│   ├── globals.css               # Design tokens & component styles
+│   ├── layout.tsx                # Root layout with metadata
+│   └── page.tsx                  # Main dashboard page
 ├── components/
-│   ├── HeroCard.tsx            # Primary weather display
-│   ├── ForecastCard.tsx        # 7-day forecast grid
-│   ├── WeatherCharts.tsx       # Interactive analytics charts
-│   ├── AirQualityCard.tsx      # AQI with pollutant breakdown
-│   ├── WindCard.tsx            # Wind speed + compass
-│   ├── SearchBar.tsx           # Autocomplete search + geolocation
-│   └── SidePanel.tsx           # Favorites + history panel
+│   ├── HeroCard.tsx              # Main weather display card
+│   ├── ForecastCard.tsx          # 7-day forecast grid
+│   ├── WeatherCharts.tsx         # Recharts analytics (4 tabs)
+│   ├── AirQualityCard.tsx        # AQI indicator + pollutant grid
+│   ├── WindCard.tsx              # Wind speed + compass
+│   ├── SearchBar.tsx             # Autocomplete search + geolocation
+│   └── SidePanel.tsx             # Favorites + search history
 ├── lib/
-│   ├── weather.ts              # OpenWeatherMap API integration
-│   └── prisma.ts               # Prisma client singleton
+│   ├── weather.ts                # OpenWeatherMap API calls
+│   └── prisma.ts                 # Prisma client singleton
 ├── hooks/
-│   └── useDebounce.ts          # Debounced callback hook
+│   └── useDebounce.ts            # Debounced callback hook
 └── prisma/
-    └── schema.prisma           # Database schema
+    └── schema.prisma             # Database models
 ```
 
 ---
 
-## 🧠 HCI Principles Applied
+## Database Models
 
-This project was designed following key **Human-Computer Interaction** principles:
+Three tables stored in PostgreSQL via Prisma:
 
-| Principle                             | Implementation                                                                                 |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Visibility of System Status**       | Live "Station Connected" indicator, loading skeletons, refresh spinner, and "Demo Mode" banner |
-| **Match Between System & Real World** | Weather icons, compass for wind direction, intuitive temperature/humidity labels               |
-| **User Control & Freedom**            | Unit toggle (°C/°F), clear history, remove favorites, cancel search                            |
-| **Consistency & Standards**           | Uniform glass card system, consistent typography hierarchy, standard icon set                  |
-| **Error Prevention**                  | Graceful API fallbacks, input debouncing, empty state guidance                                 |
-| **Recognition Over Recall**           | Favorites panel, recent searches, city autocomplete suggestions                                |
-| **Flexibility & Efficiency**          | Keyboard search, geolocation shortcut, quick-select from history                               |
-| **Aesthetic & Minimalist Design**     | Clean visual hierarchy, purposeful use of color, no unnecessary elements                       |
+- **SearchHistory** — Logs every city search with coordinates and timestamp
+- **FavoriteCity** — Stores pinned cities (unique per city + country)
+- **WeatherCache** — Caches API responses with expiration time to reduce API calls
 
 ---
 
-## 📄 Database Schema
+## HCI Principles
 
-```prisma
-model SearchHistory {
-  id        Int      @id @default(autoincrement())
-  city      String
-  country   String?
-  lat       Float?
-  lon       Float?
-  createdAt DateTime @default(now())
-}
+This project applies Nielsen's usability heuristics:
 
-model FavoriteCity {
-  id        Int      @id @default(autoincrement())
-  city      String
-  country   String?
-  lat       Float?
-  lon       Float?
-  createdAt DateTime @default(now())
-  @@unique([city, country])
-}
-
-model WeatherCache {
-  id        Int      @id @default(autoincrement())
-  city      String   @unique
-  data      Json
-  cachedAt  DateTime @default(now())
-  expiresAt DateTime
-}
-```
-
----
-
-## 📜 License
-
-This project is open source and available under the [MIT License](LICENSE).
+| Heuristic                     | How It's Applied                                                             |
+| ----------------------------- | ---------------------------------------------------------------------------- |
+| Visibility of System Status   | "Station Connected" indicator, loading spinner on refresh, error messages    |
+| Match with Real World         | Weather icons, compass for wind direction, sunrise/sunset times              |
+| User Control & Freedom        | Unit toggle (°C/°F), clear history, remove favorites, cancel search          |
+| Consistency                   | Uniform glassmorphism cards, consistent typography, same icon set throughout |
+| Error Prevention              | API fallback to mock data, input debouncing, graceful error handling         |
+| Recognition over Recall       | Favorites panel, recent searches, autocomplete suggestions                   |
+| Flexibility                   | Keyboard search, geolocation shortcut, click history to re-search            |
+| Aesthetic & Minimalist Design | Dark theme, clean hierarchy, no clutter                                      |
 
 ---
 
 <p align="center">
-  <strong>Built with ❤️ by <a href="https://github.com/wajihacodeofficial">Wajiha Zehra</a></strong>
+  Built by <a href="https://github.com/wajihacodeofficial">Wajiha Zehra</a>
 </p>
