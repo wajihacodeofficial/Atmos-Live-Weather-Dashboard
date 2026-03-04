@@ -25,8 +25,22 @@
 
 ## 📸 Preview
 
+### 🏠 Dashboard — Live Weather & Forecast
+
 <p align="center">
-  <img src="public/screenshot-dashboard.png" alt="Atmos Dashboard Preview" width="100%" style="border-radius: 12px;" />
+  <img src="public/screenshot-hero.png" alt="Atmos Dashboard - Hero Card & Extended Forecast" width="100%" />
+</p>
+
+### 📊 Weather Analytics & Air Quality
+
+<p align="center">
+  <img src="public/screenshot-analytics.png" alt="Atmos Dashboard - Charts, Wind, AQI & 7-Day Overview" width="100%" />
+</p>
+
+### 🏗️ Atmospheric Details & Footer
+
+<p align="center">
+  <img src="public/screenshot-footer.png" alt="Atmos Dashboard - Details, History & Footer" width="100%" />
 </p>
 
 ---
