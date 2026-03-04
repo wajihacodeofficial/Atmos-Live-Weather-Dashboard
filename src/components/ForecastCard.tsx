@@ -2,7 +2,15 @@
 
 import { ForecastItem } from '@/lib/weather';
 import { format } from 'date-fns';
-import { Droplets } from 'lucide-react';
+import {
+  Droplets,
+  CloudRain,
+  Sun,
+  Cloud,
+  CloudLightning,
+  Snowflake,
+  CloudFog,
+} from 'lucide-react';
 
 interface ForecastCardProps {
   forecast: ForecastItem[];
@@ -11,26 +19,25 @@ interface ForecastCardProps {
 
 const toF = (c: number) => Math.round((c * 9) / 5 + 32);
 
-const getWeatherEmoji = (main: string) => {
+const WeatherIcon = ({ main, size = 24 }: { main: string; size?: number }) => {
+  const props = { size, className: 'transition-smooth' };
   switch (main.toLowerCase()) {
     case 'clear':
-      return '☀️';
+      return <Sun {...props} color="#fbbf24" />;
     case 'clouds':
-      return '☁️';
+      return <Cloud {...props} color="#94a3b8" />;
     case 'rain':
-      return '🌧️';
-    case 'drizzle':
-      return '🌦️';
+      return <CloudRain {...props} color="#3b82f6" />;
     case 'thunderstorm':
-      return '⛈️';
+      return <CloudLightning {...props} color="#8b5cf6" />;
     case 'snow':
-      return '❄️';
+      return <Snowflake {...props} color="#fff" />;
     case 'mist':
     case 'fog':
     case 'haze':
-      return '🌫️';
+      return <CloudFog {...props} color="#94a3b8" />;
     default:
-      return '🌤️';
+      return <Cloud {...props} color="#3b82f6" />;
   }
 };
 
@@ -38,14 +45,45 @@ export default function ForecastCard({ forecast, unit }: ForecastCardProps) {
   const convert = (c: number) => (unit === 'C' ? c : toF(c));
 
   return (
-    <div className="glass-card" style={{ padding: '24px' }}>
-      <p className="section-title">7-Day Forecast</p>
+    <div className="glass card-premium" style={{ padding: '2rem' }}>
       <div
         style={{
           display: 'flex',
-          gap: '10px',
-          overflowX: 'auto',
-          paddingBottom: '4px',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '2rem',
+        }}
+      >
+        <h4
+          style={{
+            fontSize: '12px',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            color: 'var(--text-dim)',
+          }}
+        >
+          Extended Forecast
+        </h4>
+        <div
+          style={{
+            padding: '4px 12px',
+            background: 'rgba(255,255,255,0.05)',
+            borderRadius: 'var(--radius-full)',
+            border: '1px solid var(--border-subtle)',
+            fontSize: '11px',
+            color: 'var(--text-sub)',
+          }}
+        >
+          Next 7 Days
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(7, 1fr)',
+          gap: '0.75rem',
         }}
       >
         {forecast.map((day, i) => {
@@ -54,58 +92,78 @@ export default function ForecastCard({ forecast, unit }: ForecastCardProps) {
           return (
             <div
               key={day.dt}
-              className="forecast-card"
+              className="glass glass-hover"
               style={{
-                borderColor: isToday ? 'var(--accent-blue)' : undefined,
-                background: isToday ? 'rgba(59,130,246,0.1)' : undefined,
+                padding: '1.25rem 0.5rem',
+                borderRadius: 'var(--radius-md)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                gap: '0.75rem',
+                background: isToday
+                  ? 'rgba(59,130,246,0.1)'
+                  : 'rgba(255,255,255,0.02)',
+                borderColor: isToday
+                  ? 'var(--primary)'
+                  : 'var(--border-subtle)',
               }}
             >
-              <div
+              <span
                 style={{
                   fontSize: '11px',
-                  fontWeight: 600,
-                  color: isToday ? 'var(--accent-blue)' : 'var(--text-muted)',
+                  fontWeight: 700,
                   textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
+                  color: isToday ? 'var(--primary)' : 'var(--text-dim)',
                 }}
               >
                 {isToday ? 'Today' : format(date, 'EEE')}
-              </div>
-              <div style={{ fontSize: '28px', margin: '8px 0' }}>
-                {getWeatherEmoji(day.main)}
-              </div>
+              </span>
+
               <div
+                className="glass"
                 style={{
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  color: 'var(--text-primary)',
+                  width: '40px',
+                  height: '40px',
+                  display: 'grid',
+                  placeItems: 'center',
+                  borderRadius: '12px',
                 }}
               >
-                {convert(day.temp_max)}°
+                <WeatherIcon main={day.main} size={20} />
               </div>
-              <div
-                style={{
-                  fontSize: '12px',
-                  color: 'var(--text-muted)',
-                  marginBottom: '4px',
-                }}
-              >
-                {convert(day.temp_min)}°
+
+              <div>
+                <p style={{ fontSize: '15px', fontWeight: 700 }}>
+                  {convert(day.temp_max)}°
+                </p>
+                <p
+                  style={{
+                    fontSize: '11px',
+                    color: 'var(--text-dim)',
+                    fontWeight: 600,
+                  }}
+                >
+                  {convert(day.temp_min)}°
+                </p>
               </div>
-              {day.pop > 0 && (
+
+              {day.pop > 0 ? (
                 <div
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '3px',
-                    fontSize: '11px',
-                    color: '#06b6d4',
+                    gap: '4px',
+                    fontSize: '10px',
+                    color: 'var(--accent)',
+                    fontWeight: 700,
                   }}
                 >
                   <Droplets size={10} />
                   {day.pop}%
                 </div>
+              ) : (
+                <div style={{ height: '15px' }} />
               )}
             </div>
           );

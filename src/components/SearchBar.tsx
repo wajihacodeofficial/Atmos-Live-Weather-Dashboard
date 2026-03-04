@@ -93,28 +93,42 @@ export default function SearchBar({
   return (
     <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
       <form onSubmit={handleSubmit}>
-        <div className="search-container">
+        <div
+          style={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Search
+            size={18}
+            style={{
+              position: 'absolute',
+              left: '16px',
+              color: 'var(--text-dim)',
+            }}
+          />
           <input
             ref={inputRef}
-            className="search-input"
+            className="search-field"
             type="text"
-            placeholder="Search city, region..."
+            placeholder="Search city..."
             value={query}
             onChange={handleInput}
+            onFocus={() => query.length > 1 && setShowDropdown(true)}
             autoComplete="off"
-            id="city-search-input"
           />
-          {/* Icons inside input */}
+
           <div
             style={{
               position: 'absolute',
-              right: '16px',
+              right: '12px',
               display: 'flex',
-              gap: '8px',
               alignItems: 'center',
+              gap: '8px',
             }}
           >
-            {query && !isLoading && (
+            {query && (
               <button
                 type="button"
                 onClick={handleClear}
@@ -122,100 +136,121 @@ export default function SearchBar({
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  color: 'var(--text-muted)',
-                  display: 'flex',
+                  color: 'var(--text-dim)',
                 }}
               >
                 <X size={16} />
               </button>
             )}
-            {isLoading || searching ? (
-              <Loader2
-                size={18}
-                style={{
-                  color: 'var(--accent-blue)',
-                  animation: 'spin 1s linear infinite',
-                }}
-              />
-            ) : (
-              <button
-                type="submit"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--accent-blue)',
-                  display: 'flex',
-                }}
-              >
-                <Search size={18} />
-              </button>
-            )}
+
+            <div
+              style={{
+                width: '1px',
+                height: '20px',
+                background: 'var(--border-subtle)',
+              }}
+            />
+
+            <button
+              type="button"
+              onClick={onLocate}
+              title="Locate me"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--primary)',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '4px',
+              }}
+            >
+              {isLoading ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : (
+                <MapPin size={18} />
+              )}
+            </button>
           </div>
         </div>
       </form>
 
-      {/* Location button */}
-      <button
-        onClick={onLocate}
-        title="Use my location"
-        id="locate-btn"
-        style={{
-          position: 'absolute',
-          left: '100%',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          marginLeft: '10px',
-          background: 'rgba(59,130,246,0.1)',
-          border: '1px solid rgba(59,130,246,0.3)',
-          borderRadius: '50%',
-          width: '48px',
-          height: '48px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          color: 'var(--accent-blue)',
-          transition: 'all 0.2s ease',
-        }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.background = 'rgba(59,130,246,0.2)')
-        }
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.background = 'rgba(59,130,246,0.1)')
-        }
-      >
-        <MapPin size={18} />
-      </button>
-
-      {/* Autocomplete */}
+      {/* Modern Dropdown */}
       {showDropdown && results.length > 0 && (
-        <div className="autocomplete-list" style={{ left: 0, right: '60px' }}>
+        <div
+          className="glass shadow-premium"
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 12px)',
+            left: 0,
+            right: 0,
+            borderRadius: 'var(--radius-lg)',
+            overflow: 'hidden',
+            zIndex: 1000,
+            background: 'rgba(15, 23, 42, 0.95)',
+            padding: '8px',
+          }}
+        >
           {results.map((city, i) => (
             <div
               key={i}
-              className="autocomplete-item"
               onClick={() => handleSelect(city)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 16px',
+                borderRadius: 'var(--radius-md)',
+                cursor: 'pointer',
+                transition: 'var(--transition-smooth)',
+              }}
+              className="glass-hover"
             >
-              <MapPin
-                size={16}
-                style={{ color: 'var(--accent-blue)', flexShrink: 0 }}
-              />
-              <div>
-                <div style={{ fontSize: '14px', fontWeight: 500 }}>
+              <div
+                className="glass"
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  display: 'grid',
+                  placeItems: 'center',
+                  borderRadius: '8px',
+                  background: 'rgba(255,255,255,0.05)',
+                }}
+              >
+                <MapPin size={14} color="var(--primary)" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: 'var(--text-main)',
+                  }}
+                >
                   {city.name}
                 </div>
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                <div style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
                   {[city.state, city.country].filter(Boolean).join(', ')}
                 </div>
               </div>
+              <Search size={12} color="var(--text-dim)" opacity={0.5} />
             </div>
           ))}
         </div>
       )}
 
-      <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      <style jsx>{`
+        .animate-spin {
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
       `}</style>
     </div>
   );

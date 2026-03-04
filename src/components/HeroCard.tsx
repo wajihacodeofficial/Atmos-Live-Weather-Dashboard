@@ -1,11 +1,20 @@
 'use client';
 
 import { WeatherData } from '@/lib/weather';
-import { Heart, Droplets, Wind, Eye, Gauge, Thermometer } from 'lucide-react';
+import {
+  Heart,
+  Droplets,
+  Wind,
+  Eye,
+  Gauge,
+  Thermometer,
+  Sun,
+  Sunset,
+} from 'lucide-react';
 import { format } from 'date-fns';
 
 interface HeroCardProps {
-  data: WeatherData;
+  data: WeatherData & { isMock?: boolean };
   unit: 'C' | 'F';
   isFavorite: boolean;
   onToggleFavorite: () => void;
@@ -30,41 +39,27 @@ export default function HeroCard({
   const getWeatherGradient = (main: string) => {
     switch (main.toLowerCase()) {
       case 'clear':
-        return 'linear-gradient(145deg, #0f2347 0%, #1a4480 50%, #0d1f3c 100%)';
+        return 'linear-gradient(145deg, #1e3a8a 0%, #1e40af 50%, #1e1b4b 100%)';
       case 'clouds':
-        return 'linear-gradient(145deg, #1a2744 0%, #2d3f5e 50%, #0d1f3c 100%)';
+        return 'linear-gradient(145deg, #1e293b 0%, #334155 50%, #0f172a 100%)';
       case 'rain':
-      case 'drizzle':
-        return 'linear-gradient(145deg, #0d1f3c 0%, #1a2d4a 50%, #0f2347 100%)';
-      case 'thunderstorm':
-        return 'linear-gradient(145deg, #0a0a1a 0%, #1a1535 50%, #0d1f3c 100%)';
-      case 'snow':
-        return 'linear-gradient(145deg, #1a2a44 0%, #2a3f5f 50%, #0d1f3c 100%)';
+        return 'linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #020617 100%)';
       default:
-        return 'linear-gradient(145deg, #0d1f3c 0%, #162944 50%, #0d1f3c 100%)';
+        return 'linear-gradient(145deg, #0f172a 0%, #1e1b4b 100%)';
     }
   };
 
   return (
     <div
-      style={{
-        background: getWeatherGradient(data.main),
-        border: '1px solid var(--border)',
-        borderRadius: 'var(--radius-xl)',
-        padding: '32px',
-        position: 'relative',
-        overflow: 'hidden',
-      }}
+      className="glass card-premium shadow-premium animate-fade"
+      style={{ background: getWeatherGradient(data.main) }}
     >
-      <div className="shimmer-overlay" />
-
-      {/* Top row */}
+      {/* City & Locale */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-start',
-          marginBottom: '8px',
         }}
       >
         <div>
@@ -73,7 +68,7 @@ export default function HeroCard({
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              marginBottom: '4px',
+              marginBottom: '8px',
             }}
           >
             <div
@@ -81,199 +76,200 @@ export default function HeroCard({
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                background: '#22c55e',
-                boxShadow: '0 0 6px #22c55e',
+                background: '#10b981',
+                boxShadow: '0 0 12px #10b981',
               }}
             />
-            <span
+            <p
               style={{
-                fontSize: '12px',
-                color: 'var(--text-muted)',
-                fontWeight: 500,
+                fontSize: '10px',
+                fontWeight: 700,
                 textTransform: 'uppercase',
-                letterSpacing: '0.08em',
+                letterSpacing: '0.1em',
+                color: 'rgba(255,255,255,0.6)',
               }}
             >
-              Live
-            </span>
+              Station Connected
+            </p>
           </div>
-          <h2 style={{ fontSize: '26px', fontWeight: 700, lineHeight: 1.2 }}>
-            {data.city}
-          </h2>
-          <div
+          <h2
             style={{
-              fontSize: '14px',
-              color: 'var(--text-secondary)',
-              marginTop: '2px',
+              fontSize: '2.5rem',
+              fontWeight: 800,
+              letterSpacing: '-0.04em',
             }}
           >
-            {data.country} · {format(now, 'EEEE, MMM d')}
-          </div>
+            {data.city}
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>
+            {data.country} · {format(now, 'EEEE, MMM d HH:mm')}
+          </p>
         </div>
+
         <button
           className={`fav-btn ${isFavorite ? 'active' : ''}`}
           onClick={onToggleFavorite}
-          id="favorite-toggle-btn"
-          title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          style={{
+            width: '48px',
+            height: '48px',
+            borderRadius: '16px',
+            background: 'rgba(255,255,255,0.1)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(8px)',
+            display: 'grid',
+            placeItems: 'center',
+            cursor: 'pointer',
+            transition: 'var(--transition-smooth)',
+            color: isFavorite ? '#f59e0b' : '#fff',
+          }}
         >
-          <Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} />
+          <Heart size={20} fill={isFavorite ? 'currentColor' : 'none'} />
         </button>
       </div>
 
-      {/* Main temp display */}
+      {/* Hero Display */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginTop: '24px',
+          margin: '3rem 0',
         }}
       >
         <div>
-          <div className="temp-display">
-            {temp}°
-            <span style={{ fontSize: '48px', opacity: 0.6 }}>{unit}</span>
+          <div style={{ position: 'relative' }}>
+            <span
+              style={{
+                fontSize: '8rem',
+                fontWeight: 800,
+                letterSpacing: '-0.05em',
+                lineHeight: 1,
+              }}
+            >
+              {temp}°
+            </span>
+            <span
+              style={{
+                fontSize: '2rem',
+                fontWeight: 300,
+                verticalAlign: 'top',
+                color: 'rgba(255,255,255,0.4)',
+                marginLeft: '0.5rem',
+              }}
+            >
+              {unit}
+            </span>
           </div>
           <div
             style={{
-              marginTop: '8px',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: '1rem',
+              marginTop: '1rem',
             }}
           >
-            <Thermometer size={14} style={{ color: 'var(--text-secondary)' }} />
-            <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-              Feels like {feelsLike}°{unit}
-            </span>
-          </div>
-          <div style={{ marginTop: '8px' }}>
-            <span
-              className="badge badge-blue"
-              style={{ textTransform: 'capitalize' }}
+            <div
+              className="glass"
+              style={{
+                padding: '6px 16px',
+                borderRadius: 'var(--radius-full)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <Thermometer size={14} color="var(--primary)" />
+              <span style={{ fontSize: '14px', fontWeight: 600 }}>
+                Feels {feelsLike}°
+              </span>
+            </div>
+            <p
+              style={{
+                fontSize: '1.25rem',
+                fontWeight: 600,
+                color: 'rgba(255,255,255,0.8)',
+                textTransform: 'capitalize',
+              }}
             >
               {data.description}
-            </span>
+            </p>
           </div>
         </div>
 
-        <div className="weather-icon-wrap">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+        <div
+          className="weather-icon-wrap"
+          style={{ transform: 'scale(1.5)', marginRight: '2rem' }}
+        >
           <img
             src={iconUrl}
             alt={data.description}
             width={120}
             height={120}
-            style={{
-              filter: 'drop-shadow(0 0 20px rgba(99,179,237,0.4))',
-              zIndex: 1,
-              position: 'relative',
-            }}
+            style={{ filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.3))' }}
           />
         </div>
       </div>
 
-      {/* Stats row */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: '12px',
-          marginTop: '28px',
-          paddingTop: '20px',
-          borderTop: '1px solid var(--border)',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '1rem',
+          paddingTop: '2rem',
+          borderTop: '1px solid rgba(255,255,255,0.1)',
         }}
       >
-        {[
-          {
-            icon: <Droplets size={16} />,
-            label: 'Humidity',
-            value: `${data.humidity}%`,
-            color: '#06b6d4',
-          },
-          {
-            icon: <Wind size={16} />,
-            label: 'Wind',
-            value: `${data.wind_speed} km/h`,
-            color: '#8b5cf6',
-          },
-          {
-            icon: <Eye size={16} />,
-            label: 'Visibility',
-            value: `${data.visibility} km`,
-            color: '#14b8a6',
-          },
-          {
-            icon: <Gauge size={16} />,
-            label: 'Pressure',
-            value: `${data.pressure} hPa`,
-            color: '#f97316',
-          },
-        ].map(({ icon, label, value, color }) => (
-          <div key={label} style={{ textAlign: 'center' }}>
-            <div
-              style={{
-                color,
-                marginBottom: '4px',
-                display: 'flex',
-                justifyContent: 'center',
-              }}
-            >
-              {icon}
-            </div>
-            <div
-              style={{
-                fontSize: '13px',
-                fontWeight: 600,
-                color: 'var(--text-primary)',
-              }}
-            >
-              {value}
-            </div>
-            <div
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div
+            className="glass"
+            style={{
+              width: '40px',
+              height: '40px',
+              display: 'grid',
+              placeItems: 'center',
+              borderRadius: '12px',
+            }}
+          >
+            <Sun size={20} color="#fbbf24" />
+          </div>
+          <div>
+            <p
               style={{
                 fontSize: '11px',
-                color: 'var(--text-muted)',
-                marginTop: '2px',
+                color: 'var(--text-dim)',
+                fontWeight: 600,
               }}
             >
-              {label}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Sunrise/Sunset */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: '16px',
-          paddingTop: '16px',
-          borderTop: '1px solid var(--border)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '20px' }}>🌅</span>
-          <div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-              Sunrise
-            </div>
-            <div style={{ fontSize: '14px', fontWeight: 600 }}>
-              {sunriseTime}
-            </div>
+              SUNRISE
+            </p>
+            <p style={{ fontWeight: 700 }}>{sunriseTime}</p>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-              Sunset
-            </div>
-            <div style={{ fontSize: '14px', fontWeight: 600 }}>
-              {sunsetTime}
-            </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div
+            className="glass"
+            style={{
+              width: '40px',
+              height: '40px',
+              display: 'grid',
+              placeItems: 'center',
+              borderRadius: '12px',
+            }}
+          >
+            <Sunset size={20} color="#f87171" />
           </div>
-          <span style={{ fontSize: '20px' }}>🌇</span>
+          <div>
+            <p
+              style={{
+                fontSize: '11px',
+                color: 'var(--text-dim)',
+                fontWeight: 600,
+              }}
+            >
+              SUNSET
+            </p>
+            <p style={{ fontWeight: 700 }}>{sunsetTime}</p>
+          </div>
         </div>
       </div>
     </div>

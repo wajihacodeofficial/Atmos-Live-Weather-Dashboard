@@ -2,7 +2,17 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { Cloud, RefreshCw } from 'lucide-react';
+import {
+  Cloud,
+  RefreshCw,
+  Search,
+  MapPin,
+  Menu,
+  Bell,
+  Settings,
+  ChevronRight,
+  Info,
+} from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import HeroCard from '@/components/HeroCard';
 import ForecastCard from '@/components/ForecastCard';
@@ -36,7 +46,9 @@ interface HistoryCity {
 }
 
 export default function Dashboard() {
-  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [weather, setWeather] = useState<
+    (WeatherData & { isMock?: boolean }) | null
+  >(null);
   const [forecast, setForecast] = useState<{
     daily: ForecastItem[];
     hourly: HourlyForecast[];
@@ -54,12 +66,10 @@ export default function Dashboard() {
   useEffect(() => {
     loadFavorites();
     loadHistory();
-    // Default to a city
     fetchWeather('London');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync main heart icon with favorites state changes
+  // Sync main heart icon
   useEffect(() => {
     if (weather) {
       setIsFavorite(
@@ -75,7 +85,7 @@ export default function Dashboard() {
       const res = await axios.get('/api/favorites');
       setFavorites(res.data);
     } catch {
-      /* DB might not be configured */
+      /* DB check */
     }
   };
 
@@ -84,7 +94,7 @@ export default function Dashboard() {
       const res = await axios.get('/api/history');
       setHistory(res.data);
     } catch {
-      /* DB might not be configured */
+      /* DB check */
     }
   };
 
@@ -93,22 +103,13 @@ export default function Dashboard() {
       setLoading(true);
       setError(null);
       try {
-        // Fetch current weather
         const weatherRes = await axios.get('/api/weather', {
           params: lat && lon ? { lat, lon } : { city },
         });
-        const weatherData: WeatherData = weatherRes.data;
+        const weatherData = weatherRes.data;
         setWeather(weatherData);
         setLastUpdated(new Date());
 
-        // Check if favorite
-        setIsFavorite(
-          favorites.some(
-            (f) => f.city.toLowerCase() === weatherData.city.toLowerCase()
-          )
-        );
-
-        // Fetch forecast + AQI in parallel
         const forecastRes = await axios.get('/api/forecast', {
           params: { lat: weatherData.lat, lon: weatherData.lon },
         });
@@ -118,46 +119,39 @@ export default function Dashboard() {
         });
         setAirQuality(forecastRes.data.airQuality);
 
-        // Log to history (best-effort)
-        try {
-          await axios.post('/api/history', {
-            city: weatherData.city,
-            country: weatherData.country,
-            lat: weatherData.lat,
-            lon: weatherData.lon,
-          });
-          loadHistory();
-        } catch {
-          /* non-fatal */
+        // History log
+        if (!weatherData.isMock) {
+          try {
+            await axios.post('/api/history', {
+              city: weatherData.city,
+              country: weatherData.country,
+              lat: weatherData.lat,
+              lon: weatherData.lon,
+            });
+            loadHistory();
+          } catch {}
         }
       } catch (err) {
-        if (axios.isAxiosError(err)) {
-          setError(
-            err.response?.data?.error || 'City not found. Please try again.'
-          );
-        } else {
-          setError('Something went wrong. Please check your API key.');
-        }
+        setError(
+          'Connection issues or invalid city. Displaying local cache if available.'
+        );
       } finally {
         setLoading(false);
       }
     },
-    [favorites]
+    []
   );
 
   const handleLocate = () => {
-    if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser.');
-      return;
-    }
+    if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
       (pos) => fetchWeather('', pos.coords.latitude, pos.coords.longitude),
-      () => setError('Unable to retrieve your location.')
+      () => setError('Location permission denied.')
     );
   };
 
   const handleToggleFavorite = async () => {
-    if (!weather) return;
+    if (!weather || weather.isMock) return;
     if (isFavorite) {
       const fav = favorites.find(
         (f) => f.city.toLowerCase() === weather.city.toLowerCase()
@@ -167,9 +161,7 @@ export default function Dashboard() {
           await axios.delete(`/api/favorites?id=${fav.id}`);
           setIsFavorite(false);
           loadFavorites();
-        } catch {
-          /* non-fatal */
-        }
+        } catch {}
       }
     } else {
       try {
@@ -181,27 +173,7 @@ export default function Dashboard() {
         });
         setIsFavorite(true);
         loadFavorites();
-      } catch {
-        /* non-fatal */
-      }
-    }
-  };
-
-  const handleRemoveFavorite = async (id: number) => {
-    try {
-      await axios.delete(`/api/favorites?id=${id}`);
-      loadFavorites();
-    } catch {
-      /* non-fatal */
-    }
-  };
-
-  const handleClearHistory = async () => {
-    try {
-      await axios.delete('/api/history');
-      setHistory([]);
-    } catch {
-      /* non-fatal */
+      } catch {}
     }
   };
 
@@ -210,54 +182,31 @@ export default function Dashboard() {
   };
 
   return (
-    <div style={{ position: 'relative', minHeight: '100vh' }}>
-      {/* Background orbs */}
-      <div className="bg-orb bg-orb-1" />
-      <div className="bg-orb bg-orb-2" />
-      <div className="bg-orb bg-orb-3" />
+    <div className="min-h-screen">
+      <div className="app-bg" />
 
-      {/* Navigation */}
-      <nav className="nav-bar" style={{ position: 'relative', zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, #3b82f6, #06b6d4)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 0 16px rgba(59,130,246,0.4)',
-            }}
-          >
-            <Cloud size={20} style={{ color: 'white' }} />
+      {weather?.isMock && (
+        <div className="demo-banner">
+          <Info size={14} style={{ display: 'inline', marginRight: '8px' }} />
+          DEMO MODE: Using mock data because OpenWeatherMap API key is invalid
+          or missing.
+        </div>
+      )}
+
+      <nav className="nav-wrap">
+        <div className="brand-logo" onClick={() => window.location.reload()}>
+          <div className="logo-icon">
+            <Cloud size={24} color="white" />
           </div>
-          <div>
-            <h1
-              style={{
-                fontSize: '18px',
-                fontWeight: 700,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              <span className="gradient-text">Atmos</span>
-              <span style={{ color: 'var(--text-secondary)', fontWeight: 400 }}>
-                Dashboard
-              </span>
-            </h1>
-          </div>
+          <h1 className="heading-font">
+            <span className="gradient-text">Atmos</span>
+            <span style={{ color: 'var(--text-dim)', fontWeight: 400 }}>
+              Dash
+            </span>
+          </h1>
         </div>
 
-        {/* Search bar in nav */}
-        <div
-          style={{
-            flex: 1,
-            maxWidth: '460px',
-            marginLeft: '40px',
-            position: 'relative',
-          }}
-        >
+        <div className="search-wrapper">
           <SearchBar
             onSearch={fetchWeather}
             onLocate={handleLocate}
@@ -265,234 +214,342 @@ export default function Dashboard() {
           />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Unit toggle */}
-          <div className="unit-toggle">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div className="unit-switcher">
             <button
               className={`unit-btn ${unit === 'C' ? 'active' : ''}`}
               onClick={() => setUnit('C')}
-              id="unit-celsius"
             >
               °C
             </button>
             <button
               className={`unit-btn ${unit === 'F' ? 'active' : ''}`}
               onClick={() => setUnit('F')}
-              id="unit-fahrenheit"
             >
               °F
             </button>
           </div>
 
-          {/* Refresh */}
-          {weather && (
-            <button
-              onClick={handleRefresh}
-              title="Refresh"
-              id="refresh-btn"
-              style={{
-                background: 'rgba(59,130,246,0.1)',
-                border: '1px solid var(--border)',
-                borderRadius: '10px',
-                width: '38px',
-                height: '38px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                color: 'var(--accent-blue)',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.background = 'rgba(59,130,246,0.2)')
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.background = 'rgba(59,130,246,0.1)')
-              }
-            >
-              <RefreshCw
-                size={16}
-                style={{
-                  animation: loading ? 'spin 1s linear infinite' : 'none',
-                }}
-              />
-            </button>
-          )}
+          <button
+            className="btn-icon"
+            onClick={handleRefresh}
+            title="Refresh Data"
+          >
+            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+          </button>
+
+          <div
+            className="btn-icon"
+            style={{ borderColor: 'transparent', cursor: 'default' }}
+          >
+            <Bell size={18} color="var(--text-dim)" />
+          </div>
         </div>
       </nav>
 
-      {/* Main layout */}
-      <main style={{ position: 'relative', zIndex: 1 }}>
-        <div className="dashboard-grid">
-          {/* LEFT COLUMN */}
-          <div
-            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-          >
-            {/* Error state */}
-            {error && (
-              <div className="error-card">
-                <span style={{ fontSize: '20px' }}>⚠️</span>
-                <div>
-                  <div style={{ fontWeight: 600, marginBottom: '2px' }}>
-                    Error
-                  </div>
-                  <div style={{ fontSize: '13px' }}>{error}</div>
-                </div>
-              </div>
-            )}
+      <main className="dashboard-container">
+        {/* Left Side: Core Weather & Insights */}
+        <section
+          className="animate-fade"
+          style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
+        >
+          {error && (
+            <div
+              className="glass"
+              style={{
+                padding: '1.5rem',
+                borderRadius: 'var(--radius-md)',
+                display: 'flex',
+                gap: '1rem',
+                borderLeft: '4px solid #ef4444',
+              }}
+            >
+              <span style={{ color: '#ef4444' }}>⚠️</span>
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-sub)' }}>
+                {error}
+              </p>
+            </div>
+          )}
 
-            {/* Loading skeleton */}
-            {loading && !weather && (
-              <div
-                style={{ borderRadius: 'var(--radius-xl)', overflow: 'hidden' }}
-              >
-                <div className="skeleton" style={{ height: '400px' }} />
-              </div>
-            )}
-
-            {/* Hero weather card */}
-            {weather && !loading && (
+          {loading && !weather ? (
+            <div
+              className="glass animate-pulse"
+              style={{ height: '450px', borderRadius: 'var(--radius-xl)' }}
+            />
+          ) : (
+            weather && (
               <HeroCard
                 data={weather}
                 unit={unit}
                 isFavorite={isFavorite}
                 onToggleFavorite={handleToggleFavorite}
               />
-            )}
+            )
+          )}
 
-            {/* Last updated */}
-            {lastUpdated && !loading && (
-              <div
-                style={{
-                  textAlign: 'center',
-                  fontSize: '11px',
-                  color: 'var(--text-muted)',
-                }}
-              >
-                Last updated: {lastUpdated.toLocaleTimeString()}
-              </div>
-            )}
-
-            {/* Wind card */}
-            {weather && !loading && <WindCard data={weather} />}
-
-            {/* Air Quality */}
-            {airQuality && !loading && <AirQualityCard data={airQuality} />}
-
-            {/* Side panel */}
-            {(favorites.length > 0 || history.length > 0) && (
-              <SidePanel
-                favorites={favorites}
-                history={history}
-                onSelect={fetchWeather}
-                onRemoveFavorite={handleRemoveFavorite}
-                onClearHistory={handleClearHistory}
-              />
-            )}
+          <div className="stat-grid">
+            {weather && <WindCard data={weather} />}
+            {airQuality && <AirQualityCard data={airQuality} />}
           </div>
 
-          {/* RIGHT COLUMN */}
-          <div
-            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-          >
-            {/* Loading skeletons */}
-            {loading && (
-              <>
-                <div
-                  className="skeleton"
-                  style={{ height: '140px', borderRadius: 'var(--radius-lg)' }}
-                />
-                <div
-                  className="skeleton"
-                  style={{ height: '420px', borderRadius: 'var(--radius-lg)' }}
-                />
-              </>
-            )}
+          <SidePanel
+            favorites={favorites}
+            history={history}
+            onSelect={fetchWeather}
+            onRemoveFavorite={(id) =>
+              axios.delete(`/api/favorites?id=${id}`).then(loadFavorites)
+            }
+            onClearHistory={() =>
+              axios.delete('/api/history').then(() => setHistory([]))
+            }
+          />
+        </section>
 
-            {/* 7-day forecast */}
-            {forecast && !loading && (
-              <ForecastCard forecast={forecast.daily} unit={unit} />
-            )}
+        {/* Right Side: Forecast & Analytics */}
+        <section
+          className="animate-fade"
+          style={{
+            animationDelay: '0.2s',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.5rem',
+          }}
+        >
+          {loading ? (
+            <div
+              className="glass animate-pulse"
+              style={{ height: '200px', borderRadius: 'var(--radius-xl)' }}
+            />
+          ) : (
+            forecast && <ForecastCard forecast={forecast.daily} unit={unit} />
+          )}
 
-            {/* Charts */}
-            {forecast && !loading && (
+          {forecast && (
+            <div className="glass card-premium">
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '2rem',
+                }}
+              >
+                <h3
+                  className="heading-font"
+                  style={{ fontSize: '1.25rem', fontWeight: 600 }}
+                >
+                  Weather Analytics
+                </h3>
+                <div
+                  className="glass"
+                  style={{
+                    padding: '4px 12px',
+                    borderRadius: 'var(--radius-full)',
+                    fontSize: '11px',
+                    color: 'var(--text-dim)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                  }}
+                >
+                  Next 7 Days
+                </div>
+              </div>
               <WeatherCharts
                 daily={forecast.daily}
                 hourly={forecast.hourly}
                 unit={unit}
               />
-            )}
+            </div>
+          )}
 
-            {/* Empty state */}
-            {!weather && !loading && !error && (
+          {/* Detailed Stats Grid */}
+          {weather && (
+            <div
+              className="glass card-premium"
+              style={{ background: 'rgba(255,255,255,0.02)' }}
+            >
               <div
                 style={{
                   display: 'flex',
-                  flexDirection: 'column',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  height: '400px',
-                  gap: '16px',
-                  color: 'var(--text-muted)',
+                  gap: '8px',
+                  marginBottom: '24px',
                 }}
               >
-                <div style={{ fontSize: '64px' }}>🌍</div>
-                <p
+                <Settings size={14} color="var(--primary)" />
+                <h4
                   style={{
-                    fontSize: '18px',
-                    fontWeight: 600,
-                    color: 'var(--text-secondary)',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.1em',
+                    color: 'var(--text-dim)',
                   }}
                 >
-                  Search for any city
-                </p>
-                <p style={{ fontSize: '14px', textAlign: 'center' }}>
-                  Enter a city name above to get live weather data,
-                  <br />
-                  7-day forecasts, and analytics.
-                </p>
+                  Atmospheric Details
+                </h4>
               </div>
-            )}
-          </div>
-        </div>
+              <div className="stat-grid-4 stat-grid" style={{ gap: '2rem' }}>
+                <div>
+                  <p style={{ color: 'var(--text-dim)', fontSize: '11px' }}>
+                    Humidity
+                  </p>
+                  <p style={{ fontSize: '1.50rem', fontWeight: 700 }}>
+                    {weather.humidity}%
+                  </p>
+                </div>
+                <div>
+                  <p style={{ color: 'var(--text-dim)', fontSize: '11px' }}>
+                    Pressure
+                  </p>
+                  <p style={{ fontSize: '1.50rem', fontWeight: 700 }}>
+                    {weather.pressure}{' '}
+                    <span style={{ fontSize: '12px' }}>hPa</span>
+                  </p>
+                </div>
+                <div>
+                  <p style={{ color: 'var(--text-dim)', fontSize: '11px' }}>
+                    Visibility
+                  </p>
+                  <p style={{ fontSize: '1.50rem', fontWeight: 700 }}>
+                    {weather.visibility}{' '}
+                    <span style={{ fontSize: '12px' }}>km</span>
+                  </p>
+                </div>
+                <div>
+                  <p style={{ color: 'var(--text-dim)', fontSize: '11px' }}>
+                    Wind Degree
+                  </p>
+                  <p style={{ fontSize: '1.50rem', fontWeight: 700 }}>
+                    {weather.wind_deg}°
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
       </main>
 
-      {/* Footer */}
       <footer
         style={{
-          textAlign: 'center',
-          padding: '24px',
-          borderTop: '1px solid var(--border)',
-          color: 'var(--text-muted)',
-          fontSize: '12px',
-          position: 'relative',
-          zIndex: 1,
+          padding: '4rem 2rem 2rem',
+          borderTop: '1px solid var(--border-subtle)',
+          marginTop: '4rem',
         }}
       >
         <div
+          className="dashboard-container"
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            padding: 0,
           }}
         >
-          <Cloud size={14} style={{ color: 'var(--accent-blue)' }} />
-          <span>Atmos Dashboard · Powered by OpenWeatherMap</span>
-          <span style={{ color: 'var(--border)' }}>·</span>
-          <a
-            href="https://openweathermap.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'var(--accent-blue)', textDecoration: 'none' }}
-          >
-            API Docs
-          </a>
+          <div>
+            <div
+              className="brand-logo"
+              style={{ fontSize: '1rem', marginBottom: '1rem' }}
+            >
+              <div
+                className="logo-icon"
+                style={{ width: '30px', height: '30px' }}
+              >
+                <Cloud size={16} color="white" />
+              </div>
+              <span>AtmosDash</span>
+            </div>
+            <p
+              style={{
+                color: 'var(--text-dim)',
+                fontSize: '0.875rem',
+                lineHeight: 1.6,
+              }}
+            >
+              Professional weather intelligence for modern environments.
+              Data-driven insights at your fingertips.
+            </p>
+          </div>
+          <div style={{ paddingLeft: '2rem' }}>
+            <h5
+              style={{
+                fontWeight: 700,
+                marginBottom: '1rem',
+                fontSize: '0.875rem',
+              }}
+            >
+              Platform
+            </h5>
+            <ul
+              style={{
+                listStyle: 'none',
+                color: 'var(--text-sub)',
+                fontSize: '0.875rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+              }}
+            >
+              <li className="glass-hover" style={{ cursor: 'pointer' }}>
+                Live Weather
+              </li>
+              <li className="glass-hover" style={{ cursor: 'pointer' }}>
+                Forecast Maps
+              </li>
+              <li className="glass-hover" style={{ cursor: 'pointer' }}>
+                Air Quality
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h5
+              style={{
+                fontWeight: 700,
+                marginBottom: '1rem',
+                fontSize: '0.875rem',
+              }}
+            >
+              Resources
+            </h5>
+            <ul
+              style={{
+                listStyle: 'none',
+                color: 'var(--text-sub)',
+                fontSize: '0.875rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+              }}
+            >
+              <li>OpenWeather API</li>
+              <li>Documentation</li>
+              <li>HCI Guidelines</li>
+            </ul>
+          </div>
+        </div>
+        <div
+          style={{
+            textAlign: 'center',
+            marginTop: '3rem',
+            fontSize: '0.75rem',
+            color: 'var(--text-dim)',
+          }}
+        >
+          © 2024 Atmos Dashboard. Built with Next.js and Prisma. Designed for
+          visual excellence.
         </div>
       </footer>
 
-      <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      <style jsx>{`
+        .animate-spin {
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
       `}</style>
     </div>
   );

@@ -2,15 +2,23 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Atmos — Live Weather Dashboard',
+  title: 'Atmos — Live Weather Intelligence Dashboard',
   description:
-    'Real-time weather dashboard with live forecasts, air quality, interactive charts, and 7-day forecasts. Powered by OpenWeatherMap.',
-  keywords: ['weather', 'dashboard', 'forecast', 'air quality', 'live weather'],
+    'Professional weather intelligence platform with real-time conditions, 7-day forecasts, air quality monitoring, and interactive analytics. Built with Next.js, Prisma, and OpenWeatherMap.',
+  keywords: [
+    'weather',
+    'dashboard',
+    'forecast',
+    'air quality',
+    'live weather',
+    'analytics',
+    'next.js',
+  ],
   authors: [{ name: 'Atmos Dashboard' }],
   openGraph: {
-    title: 'Atmos — Live Weather Dashboard',
+    title: 'Atmos — Live Weather Intelligence Dashboard',
     description:
-      'Real-time weather dashboard with live forecasts, air quality, and interactive charts.',
+      'Professional weather intelligence with real-time conditions, forecasts, and analytics.',
     type: 'website',
   },
 };
@@ -30,7 +38,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#050b1a" />
+        <meta name="theme-color" content="#020617" />
       </head>
       <body>{children}</body>
     </html>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Star, MapPin, Clock, Trash2 } from 'lucide-react';
+import { Star, MapPin, Clock, Trash2, ChevronRight } from 'lucide-react';
 
 interface City {
   id: number;
@@ -27,65 +27,77 @@ export default function SidePanel({
   onClearHistory,
 }: SidePanelProps) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {/* Favorites */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Favorites Section */}
       {favorites.length > 0 && (
-        <div className="glass-card" style={{ padding: '20px' }}>
+        <div className="glass card-premium" style={{ padding: '1.5rem' }}>
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              marginBottom: '14px',
+              marginBottom: '1.5rem',
             }}
           >
-            <Star size={14} style={{ color: 'var(--accent-orange)' }} />
-            <p className="section-title" style={{ marginBottom: 0 }}>
-              Favorites
-            </p>
+            <Star size={14} color="#f59e0b" fill="#f59e0b" />
+            <h4
+              style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                color: 'var(--text-sub)',
+              }}
+            >
+              Pinned Locations
+            </h4>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+
+          <div
+            style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
+          >
             {favorites.map((f) => (
               <div
                 key={f.id}
+                className="glass glass-hover"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '10px 14px',
-                  background: 'rgba(249,115,22,0.06)',
-                  border: '1px solid rgba(249,115,22,0.15)',
-                  borderRadius: '10px',
+                  padding: '0.75rem 1rem',
+                  borderRadius: 'var(--radius-md)',
                   cursor: 'pointer',
-                  transition: 'all 0.2s',
+                  background: 'rgba(255,255,255,0.03)',
                 }}
                 onClick={() =>
                   onSelect(f.city, f.lat ?? undefined, f.lon ?? undefined)
                 }
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.background = 'rgba(249,115,22,0.12)')
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.background = 'rgba(249,115,22,0.06)')
-                }
               >
                 <div
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
                 >
-                  <MapPin size={14} style={{ color: 'var(--accent-orange)' }} />
+                  <div
+                    className="glass"
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      display: 'grid',
+                      placeItems: 'center',
+                      borderRadius: '8px',
+                    }}
+                  >
+                    <MapPin size={14} color="var(--primary)" />
+                  </div>
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: 600 }}>
+                    <p style={{ fontSize: '14px', fontWeight: 600 }}>
                       {f.city}
-                    </div>
-                    {f.country && (
-                      <div
-                        style={{ fontSize: '11px', color: 'var(--text-muted)' }}
-                      >
-                        {f.country}
-                      </div>
-                    )}
+                    </p>
+                    <p style={{ fontSize: '11px', color: 'var(--text-dim)' }}>
+                      {f.country}
+                    </p>
                   </div>
                 </div>
+
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -94,12 +106,10 @@ export default function SidePanel({
                   style={{
                     background: 'none',
                     border: 'none',
+                    color: 'var(--text-dim)',
                     cursor: 'pointer',
-                    color: 'var(--text-muted)',
                     padding: '4px',
-                    display: 'flex',
                   }}
-                  title="Remove favorite"
                 >
                   <Trash2 size={14} />
                 </button>
@@ -109,22 +119,30 @@ export default function SidePanel({
         </div>
       )}
 
-      {/* History */}
+      {/* History Section */}
       {history.length > 0 && (
-        <div className="glass-card" style={{ padding: '20px' }}>
+        <div className="glass card-premium" style={{ padding: '1.5rem' }}>
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              marginBottom: '14px',
+              marginBottom: '1.5rem',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Clock size={14} style={{ color: 'var(--text-muted)' }} />
-              <p className="section-title" style={{ marginBottom: 0 }}>
-                Recent
-              </p>
+              <Clock size={14} color="var(--text-dim)" />
+              <h4
+                style={{
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  color: 'var(--text-sub)',
+                }}
+              >
+                Recently Viewed
+              </h4>
             </div>
             {onClearHistory && (
               <button
@@ -132,49 +150,43 @@ export default function SidePanel({
                 style={{
                   background: 'none',
                   border: 'none',
+                  color: 'var(--text-dim)',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
                   cursor: 'pointer',
-                  color: 'var(--text-muted)',
-                  fontSize: '12px',
                 }}
-                title="Clear History"
               >
-                Clear All
+                Clear
               </button>
             )}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {history.slice(0, 6).map((h) => (
+
+          <div
+            style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}
+          >
+            {history.slice(0, 5).map((h) => (
               <div
                 key={h.id}
+                className="glass-hover"
                 style={{
+                  padding: '8px 12px',
+                  borderRadius: 'var(--radius-md)',
+                  cursor: 'pointer',
+                  fontSize: '13px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '10px',
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  transition: 'background 0.2s',
-                  color: 'var(--text-secondary)',
-                  fontSize: '13px',
+                  justifyContent: 'space-between',
+                  color: 'var(--text-sub)',
                 }}
                 onClick={() =>
                   onSelect(h.city, h.lat ?? undefined, h.lon ?? undefined)
                 }
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.background = 'transparent')
-                }
               >
-                <Clock
-                  size={12}
-                  style={{ color: 'var(--text-muted)', flexShrink: 0 }}
-                />
                 <span>
-                  {h.city}
-                  {h.country ? `, ${h.country}` : ''}
+                  {h.city}, {h.country}
                 </span>
+                <ChevronRight size={14} opacity={0.3} />
               </div>
             ))}
           </div>

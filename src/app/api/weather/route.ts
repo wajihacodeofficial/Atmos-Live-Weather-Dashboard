@@ -43,7 +43,32 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(data);
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.response?.status === 401 || error?.message?.includes('401')) {
+      // Mock Data to display when API Key is missing or invalid
+      // This is crucial for UI demonstrations and screenshots
+      return NextResponse.json({
+        city: city || 'London',
+        country: 'GB',
+        lat: 51.5074,
+        lon: -0.1278,
+        temp: 15,
+        feels_like: 14,
+        humidity: 75,
+        pressure: 1012,
+        visibility: 10,
+        wind_speed: 18,
+        wind_deg: 270,
+        description: 'broken clouds (Mock Mode - Invalid API Key)',
+        icon: '04d',
+        main: 'Clouds',
+        sunrise: Date.now() / 1000 - 6 * 3600,
+        sunset: Date.now() / 1000 + 6 * 3600,
+        timestamp: Date.now() / 1000,
+        isMock: true,
+      });
+    }
+
     const msg =
       error instanceof Error ? error.message : 'Failed to fetch weather';
     return NextResponse.json({ error: msg }, { status: 500 });

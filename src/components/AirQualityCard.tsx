@@ -1,6 +1,7 @@
 'use client';
 
 import { AirQuality, getAQILabel } from '@/lib/weather';
+import { Leaf } from 'lucide-react';
 
 interface AirQualityCardProps {
   data: AirQuality;
@@ -8,195 +9,131 @@ interface AirQualityCardProps {
 
 export default function AirQualityCard({ data }: AirQualityCardProps) {
   const { label, color } = getAQILabel(data.aqi);
-  const aqiPercent = ((data.aqi - 1) / 4) * 100;
 
   const pollutants = [
-    {
-      name: 'PM2.5',
-      value: data.pm2_5.toFixed(1),
-      unit: 'μg/m³',
-      threshold: 25,
-      color: '#3b82f6',
-    },
-    {
-      name: 'PM10',
-      value: data.pm10.toFixed(1),
-      unit: 'μg/m³',
-      threshold: 50,
-      color: '#8b5cf6',
-    },
-    {
-      name: 'O₃',
-      value: data.o3.toFixed(1),
-      unit: 'μg/m³',
-      threshold: 100,
-      color: '#06b6d4',
-    },
-    {
-      name: 'NO₂',
-      value: data.no2.toFixed(1),
-      unit: 'μg/m³',
-      threshold: 40,
-      color: '#14b8a6',
-    },
-    {
-      name: 'SO₂',
-      value: data.so2.toFixed(1),
-      unit: 'μg/m³',
-      threshold: 20,
-      color: '#f97316',
-    },
-    {
-      name: 'CO',
-      value: (data.co / 1000).toFixed(2),
-      unit: 'mg/m³',
-      threshold: 10,
-      color: '#ec4899',
-    },
+    { label: 'PM2.5', value: data.pm2_5, unit: 'µg/m³' },
+    { label: 'PM10', value: data.pm10, unit: 'µg/m³' },
+    { label: 'O₃', value: data.o3, unit: 'µg/m³' },
+    { label: 'NO₂', value: data.no2, unit: 'µg/m³' },
   ];
 
   return (
-    <div className="glass-card" style={{ padding: '24px' }}>
-      <p className="section-title">Air Quality Index</p>
-
-      {/* AQI Badge */}
+    <div className="glass card-premium" style={{ padding: '1.5rem' }}>
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '16px',
-          marginBottom: '20px',
+          gap: '8px',
+          marginBottom: '1.5rem',
+        }}
+      >
+        <Leaf size={14} color={color} />
+        <h4
+          style={{
+            fontSize: '11px',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            color: 'var(--text-dim)',
+          }}
+        >
+          Air Quality
+        </h4>
+      </div>
+
+      {/* AQI Big Display */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1.5rem',
+          marginBottom: '1.5rem',
         }}
       >
         <div
           style={{
-            width: '64px',
-            height: '64px',
-            borderRadius: '50%',
-            background: `${color}22`,
-            border: `3px solid ${color}`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-            boxShadow: `0 0 20px ${color}44`,
+            width: '56px',
+            height: '56px',
+            borderRadius: '16px',
+            background: `${color}15`,
+            border: `2px solid ${color}40`,
+            display: 'grid',
+            placeItems: 'center',
+            fontSize: '1.5rem',
+            fontWeight: 800,
+            color,
           }}
         >
-          <span style={{ fontSize: '22px', fontWeight: 700, color }}>
-            {data.aqi}
-          </span>
+          {data.aqi}
         </div>
         <div>
-          <div style={{ fontSize: '20px', fontWeight: 700, color }}>
-            {label}
-          </div>
-          <div
-            style={{
-              fontSize: '12px',
-              color: 'var(--text-muted)',
-              marginTop: '4px',
-            }}
-          >
-            {data.aqi === 1
-              ? 'Air quality is satisfactory.'
-              : data.aqi === 2
-                ? 'Acceptable for most people.'
-                : data.aqi === 3
-                  ? 'Sensitive groups may be affected.'
-                  : data.aqi === 4
-                    ? 'Health effects expected.'
-                    : 'Serious health effects for all.'}
-          </div>
+          <p style={{ fontSize: '1.25rem', fontWeight: 700, color }}>{label}</p>
+          <p style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
+            Air Quality Index
+          </p>
         </div>
       </div>
 
-      {/* AQI gradient bar */}
-      <div style={{ marginBottom: '24px' }}>
-        <div className="aqi-bar">
-          <div
-            className="aqi-indicator"
-            style={{ left: `${Math.min(Math.max(aqiPercent, 4), 96)}%` }}
-          />
-        </div>
+      {/* AQI Bar */}
+      <div style={{ marginBottom: '1.5rem' }}>
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            marginTop: '6px',
+            height: '6px',
+            borderRadius: '3px',
+            background:
+              'linear-gradient(to right, #00e400, #ffff00, #ff7e00, #ff0000, #8f3f97)',
+            position: 'relative',
           }}
         >
-          {['Good', 'Fair', 'Moderate', 'Poor', 'Very Poor'].map((l) => (
-            <span
-              key={l}
-              style={{
-                fontSize: '9px',
-                color: 'var(--text-muted)',
-                letterSpacing: '0.02em',
-              }}
-            >
-              {l}
-            </span>
-          ))}
+          <div
+            style={{
+              position: 'absolute',
+              top: '-5px',
+              left: `${((data.aqi - 1) / 4) * 100}%`,
+              width: '16px',
+              height: '16px',
+              borderRadius: '50%',
+              background: color,
+              border: '3px solid var(--bg-dark)',
+              boxShadow: `0 0 10px ${color}80`,
+              transform: 'translateX(-50%)',
+              transition: 'left 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+          />
         </div>
       </div>
 
-      {/* Pollutant grid */}
+      {/* Pollutant Grid */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '10px',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '0.75rem',
         }}
       >
-        {pollutants.map(({ name, value, unit, threshold, color: c }) => {
-          const pct = Math.min((parseFloat(value) / threshold) * 100, 100);
-          return (
-            <div
-              key={name}
-              className="stat-card"
-              style={{ padding: '14px', textAlign: 'center' }}
+        {pollutants.map((p) => (
+          <div
+            key={p.label}
+            className="glass"
+            style={{ padding: '10px 12px', borderRadius: 'var(--radius-md)' }}
+          >
+            <p
+              style={{
+                fontSize: '10px',
+                color: 'var(--text-dim)',
+                fontWeight: 600,
+              }}
             >
-              <div
-                style={{
-                  fontSize: '11px',
-                  color: 'var(--text-muted)',
-                  marginBottom: '4px',
-                }}
-              >
-                {name}
-              </div>
-              <div style={{ fontSize: '16px', fontWeight: 700, color: c }}>
-                {value}
-              </div>
-              <div
-                style={{
-                  fontSize: '10px',
-                  color: 'var(--text-muted)',
-                  marginBottom: '8px',
-                }}
-              >
-                {unit}
-              </div>
-              <div
-                style={{
-                  height: '3px',
-                  background: 'var(--bg-secondary)',
-                  borderRadius: '2px',
-                }}
-              >
-                <div
-                  style={{
-                    height: '100%',
-                    width: `${pct}%`,
-                    background: c,
-                    borderRadius: '2px',
-                    transition: 'width 1s cubic-bezier(0.4,0,0.2,1)',
-                  }}
-                />
-              </div>
-            </div>
-          );
-        })}
+              {p.label}
+            </p>
+            <p style={{ fontSize: '14px', fontWeight: 700 }}>
+              {p.value.toFixed(1)}{' '}
+              <span style={{ fontSize: '10px', color: 'var(--text-dim)' }}>
+                {p.unit}
+              </span>
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );
