@@ -58,7 +58,6 @@
 - **Search History** — Automatically tracks recently searched cities in the database
 - **Unit Toggle** — Switch between °C and °F
 - **Responsive Design** — Works on desktop and mobile screens
-- **Fallback Mock Data** — If the API key is missing, the dashboard shows demo data so the UI is still explorable
 
 ---
 
@@ -126,8 +125,6 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-> If no API key is configured, the dashboard runs in demo mode with sample data.
-
 ---
 
 ## Project Structure
@@ -182,7 +179,7 @@ This project applies Nielsen's usability heuristics:
 | Match with Real World         | Weather icons, compass for wind direction, sunrise/sunset times              |
 | User Control & Freedom        | Unit toggle (°C/°F), clear history, remove favorites, cancel search          |
 | Consistency                   | Uniform glassmorphism cards, consistent typography, same icon set throughout |
-| Error Prevention              | API fallback to mock data, input debouncing, graceful error handling         |
+| Error Prevention              | Input debouncing, graceful API error handling                                |
 | Recognition over Recall       | Favorites panel, recent searches, autocomplete suggestions                   |
 | Flexibility                   | Keyboard search, geolocation shortcut, click history to re-search            |
 | Aesthetic & Minimalist Design | Dark theme, clean hierarchy, no clutter                                      |
